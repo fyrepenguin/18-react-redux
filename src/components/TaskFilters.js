@@ -41,7 +41,7 @@ const TaskFilters = ({ tasks, setSortedTasks }) => {
   }
   const sortTasksByCreatedAt = (tasks) => {
     // sort based on sort order
-    return tasks.sort((a, b) => {
+    return tasks.slice().sort((a, b) => {
       const aDate = new Date(a.createdAt).getTime();
       const bDate = new Date(b.createdAt).getTime();
       if (sortOrder.value === "asc") {

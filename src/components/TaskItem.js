@@ -3,9 +3,12 @@ import TaskForm from './TaskForm'
 import { FaEdit, FaRegClock, FaTrashAlt } from 'react-icons/fa';
 import { BsExclamationDiamond } from 'react-icons/bs';
 import { FiCircle, FiCheckCircle } from 'react-icons/fi'
+import { useDispatch } from 'react-redux';
+import { deleteTask, updateTask } from '../reducers/tasksSlice';
 
 
-const TaskItem = ({ task, onDelete, onUpdate, overDue = false }) => {
+const TaskItem = ({ task, overDue = false }) => {
+  const dispatch = useDispatch();
   const [modal, setModal] = useState(false);
   const [status, setStatus] = useState(null);
 
@@ -18,14 +21,14 @@ const TaskItem = ({ task, onDelete, onUpdate, overDue = false }) => {
   }
 
   const handleDelete = () => {
-    onDelete(task.id)
+    dispatch(deleteTask(task.id))
   }
   useEffect(() => {
     setStatus(task.completed)
   }, [task])
 
   useEffect(() => {
-    status !== null && onUpdate({ ...task, completed: status }, task.id)
+    status !== null && dispatch(updateTask({ ...task, completed: status }))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status])
 
@@ -70,7 +73,7 @@ const TaskItem = ({ task, onDelete, onUpdate, overDue = false }) => {
 
       </div>
       {modal && <TaskForm key={task.id} modal={modal}
-        defaultTask={task} toggle={toggle} onUpdate={onUpdate} task={task} type="Edit" />}
+        defaultTask={task} toggle={toggle} task={task} type="Edit" />}
     </>
   );
 };

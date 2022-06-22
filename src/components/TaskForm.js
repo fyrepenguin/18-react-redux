@@ -5,8 +5,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { FcAddImage } from 'react-icons/fc';
 import "react-datepicker/dist/react-datepicker.css";
 import tags from '../data/tags.json';
+import { useDispatch } from 'react-redux';
+import { addTask, updateTask } from '../reducers/tasksSlice';
 
-const TaskForm = ({ modal, toggle, onCreate, task: taskData, defaultTask, type = "Create", onUpdate }) => {
+const TaskForm = ({ modal, toggle, task: taskData, defaultTask, type = "Create" }) => {
+  const dispatch = useDispatch();
   const [task, setTask] = useState({ ...defaultTask, id: uuidv4() });
 
 
@@ -29,7 +32,9 @@ const TaskForm = ({ modal, toggle, onCreate, task: taskData, defaultTask, type =
 
   const handleSave = (e) => {
     e.preventDefault()
-    type === "Create" ? onCreate(task) : onUpdate(task, task.id)
+    if (task.title.length > 0) {
+      type === "Create" ? dispatch(addTask(task)) : dispatch(updateTask(task))
+    }
     toggle()
 
   }

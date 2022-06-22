@@ -3,8 +3,11 @@ import { v4 as uuidv4 } from 'uuid';
 import TaskForm from './TaskForm'
 import TaskItem from './TaskItem';
 import TaskHeader from './TaskHeader';
+import { useDispatch } from 'react-redux';
+import { addTask } from '../reducers/tasksSlice';
 
-const TodoList = ({ tasks, onCreate, onUpdate, onDelete }) => {
+const TodoList = ({ tasks }) => {
+  const dispatch = useDispatch();
   const defaultTask = { title: "", description: "", deadline: null, tags: [], priority: false, image: "", completed: false, id: null, createdAt: null };
   const [modal, setModal] = useState(false);
   const [sortedTasks, setSortedTasks] = useState(tasks);
@@ -23,9 +26,9 @@ const TodoList = ({ tasks, onCreate, onUpdate, onDelete }) => {
     setModal(!modal);
   }
 
-  const addTask = (e) => {
+  const createTask = (e) => {
     e.preventDefault();
-    onCreate({ ...defaultTask, title, id: uuidv4(), createdAt: new Date().getTime() });
+    dispatch(addTask({ ...defaultTask, title, id: uuidv4(), createdAt: new Date().getTime() }));
     setTitle('');
   }
   const handleInput = (e) => {
@@ -76,7 +79,7 @@ const TodoList = ({ tasks, onCreate, onUpdate, onDelete }) => {
   return (
     <>
       <div className="todo-list-header">
-        <form onSubmit={addTask} className='task-input-container'>  <input placeholder="Add task todo..." type="text" name="title" onChange={handleInput} value={title} />
+        <form onSubmit={createTask} className='task-input-container'>  <input placeholder="Add task todo..." type="text" name="title" onChange={handleInput} value={title} />
           <button type="submit">Create Task</button>
         </form>
         <div className='task-input-container'>
@@ -89,21 +92,21 @@ const TodoList = ({ tasks, onCreate, onUpdate, onDelete }) => {
         {/* Today Tasks */}
         {categorisedTasks.today.filter(task => !task.completed).length > 0 && <div className="tasks-container-header">
           <h3>Today</h3>
-          {categorisedTasks.today.filter(task => !task.completed).map((task, index) => <TaskItem task={task} index={index} onDelete={onDelete} onUpdate={onUpdate} key={index} />)}</div>}
+          {categorisedTasks.today.filter(task => !task.completed).map((task, index) => <TaskItem task={task} index={index} key={index} />)}</div>}
         {/* This Week Tasks */}
         {categorisedTasks.thisWeek.filter(task => !task.completed).filter(task => !categorisedTasks.today.includes(task)).length > 0 && <div className="tasks-container-header">
           <h3>This Week</h3>
           {/* filter today tasks */}
-          {categorisedTasks.thisWeek.filter(task => !categorisedTasks.today.includes(task)).map((task, index) => <TaskItem task={task} index={index} onDelete={onDelete} onUpdate={onUpdate} key={index} />)}</div>}
+          {categorisedTasks.thisWeek.filter(task => !categorisedTasks.today.includes(task)).map((task, index) => <TaskItem task={task} index={index} key={index} />)}</div>}
 
         {/* Overdue Tasks */}
         {categorisedTasks.overDue.length > 0 && <div className="tasks-container-header">
           <h3>Overdue</h3>
-          {categorisedTasks.overDue.map((task, index) => <TaskItem task={task} index={index} onDelete={onDelete} onUpdate={onUpdate} key={index} overDue={true} />)}</div>}
+          {categorisedTasks.overDue.map((task, index) => <TaskItem task={task} index={index} key={index} overDue={true} />)}</div>}
         {/* Rest of the incomplete tasks */}
         {sortedTasks.length > 0 &&
           <div className='tasks-container-header'>
-            {sortedTasks.filter(task => !task.completed).filter(task => !categorisedTasks.today.includes(task)).filter(task => !categorisedTasks.thisWeek.includes(task)).filter(task => !categorisedTasks.overDue.includes(task)).map((task, index) => <TaskItem task={task} index={index} onDelete={onDelete} onUpdate={onUpdate} key={index} />)} </div>}
+            {sortedTasks.filter(task => !task.completed).filter(task => !categorisedTasks.today.includes(task)).filter(task => !categorisedTasks.thisWeek.includes(task)).filter(task => !categorisedTasks.overDue.includes(task)).map((task, index) => <TaskItem task={task} index={index} key={index} />)} </div>}
         {/* Empty Tasks */}
         {sortedTasks.length === 0 && <div className="tasks-container-header">
           <p className="no-tasks-found-message">No Tasks found!</p>
@@ -113,9 +116,9 @@ const TodoList = ({ tasks, onCreate, onUpdate, onDelete }) => {
         {/* Completed Tasks */}
         {categorisedTasks.completed.length > 0 && <div className="tasks-container-header">
           <h3>Completed</h3>
-          {categorisedTasks.completed.map((task, index) => <TaskItem task={task} index={index} onDelete={onDelete} onUpdate={onUpdate} key={index} />)}</div>}
+          {categorisedTasks.completed.map((task, index) => <TaskItem task={task} index={index} key={index} />)}</div>}
       </div>
-      <TaskForm key={0} toggle={toggle} modal={modal} onCreate={onCreate}
+      <TaskForm key={0} toggle={toggle} modal={modal}
         defaultTask={defaultTask} type="Create" />
     </>
   );
